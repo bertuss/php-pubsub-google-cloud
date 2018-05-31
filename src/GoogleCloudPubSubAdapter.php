@@ -35,24 +35,32 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
     protected $backgroundBatching;
 
     /**
+     * @var integer
+     */
+    protected $maxPullMessages;
+
+    /**
      * @param PubSubClient $client
      * @param string $clientIdentifier
      * @param bool $autoCreateTopics
      * @param bool $autoCreateSubscriptions
      * @param bool $backgroundBatching
+     * @param integer $maxPullMessages
      */
     public function __construct(
         PubSubClient $client,
         $clientIdentifier = null,
         $autoCreateTopics = true,
         $autoCreateSubscriptions = true,
-        $backgroundBatching = false
+        $backgroundBatching = false,
+        $maxPullMessages = 1000
     ) {
         $this->client = $client;
         $this->clientIdentifier = $clientIdentifier;
         $this->autoCreateTopics = $autoCreateTopics;
         $this->autoCreateSubscriptions = $autoCreateSubscriptions;
         $this->backgroundBatching = $backgroundBatching;
+        $this->maxPullMessages = $maxPullMessages;
     }
 
     /**
@@ -177,6 +185,7 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
                 'grpcOptions' => [
                     'timeoutMillis' => null,
                 ],
+                'maxMessages' => $this->maxPullMessages,
             ]);
 
             foreach ($messages as $message) {
